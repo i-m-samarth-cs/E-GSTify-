@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery Invoice Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: auto;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 600px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px;
+            margin: 5px;
+            width: 30%;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+        }
+        .btn-blue { background-color: #007bff; }
+        .btn-green { background-color: #28a745; }
+        .btn-red { background-color: #dc3545; }
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+        th { background-color: #f1f1f1; }
+        #invoice-section { display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Grocery Invoice Generator</h2>
+    <p><strong>GSTIN:</strong> 27ALJPN3579K1ZF</p>
+    
+    <input type="text" id="productName" placeholder="Product Name">
+    
+    <select id="productType">
+        <option value="0">Essential Goods (0% GST)</option>
+        <option value="5">Reduced Rate Goods (5% GST)</option>
+        <option value="12">Standard Goods (12% GST)</option>
+        <option value="18">Luxury Goods (18% GST)</option>
+        <option value="28">High-End Goods (28% GST)</option>
+    </select>
+
+    <input type="number" id="price" placeholder="Price">
+    <input type="number" id="quantity" placeholder="Quantity" value="1" min="1">
+
+    <button class="btn-blue" onclick="addProduct()">Add Product</button>
+    <button class="btn-green" onclick="generateInvoice()">Generate Invoice</button>
+    <button class="btn-red" onclick="downloadInvoice()">Download Invoice</button>
+
+    <div id="invoice-section">
+        <h3>Invoice</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>GST Rate</th>
+                    <th>CGST</th>
+                    <th>SGST</th>
+                    <th>Total Price</th>
+                </tr>
+            </thead>
+            <tbody id="invoiceBody"></tbody>
+        </table>
+        <h3>Total Amount: ₹<span id="totalAmount">0.00</span></h3>
+    </div>
+</div>
+
+<script>
+    let products = [];
+
+    function addProduct() {
+        let name = document.getElementById("productName").value;
+        let price = parseFloat(document.getElementById("price").value);
+        let quantity = parseInt(document.getElementById("quantity").value);
+        let gstRate = parseFloat(document.getElementById("productType").value);
+
+        if (!name || isNaN(price) || isNaN(quantity)) {
+            alert("Please enter valid product details!");
+            return;
+        }
+
+        let gstAmount = (price * gstRate) / 100;
+        let cgst = gstAmount / 2;
+        let sgst = gstAmount / 2;
+        let total = (price + gstAmount) * quantity;
+
+        products.push({ name, price, quantity, gstRate, cgst, sgst, total });
+
+        document.getElementById("productName").value = "";
+        document.getElementById("price").value = "";
+        document.getElementById("quantity").value = "1";
+    }
+
+    function generateInvoice() {
+        let invoiceBody = document.getElementById("invoiceBody");
+        invoiceBody.innerHTML = "";
+        let totalAmount = 0;
+
+        products.forEach(product => {
+            let row = `<tr>
+                <td>${product.name}</td>
+                <td>₹${product.price.toFixed(2)}</td>
+                <td>${product.quantity}</td>
+                <td>${product.gstRate}%</td>
+                <td>₹${product.cgst.toFixed(2)}</td>
+                <td>₹${product.sgst.toFixed(2)}</td>
+                <td>₹${product.total.toFixed(2)}</td>
+            </tr>`;
+            invoiceBody.innerHTML += row;
+            totalAmount += product.total;
+        });
+
+        document.getElementById("totalAmount").innerText = totalAmount.toFixed(2);
+        document.getElementById("invoice-section").style.display = "block";
+    }
+
+    function downloadInvoice() {
+        const { jsPDF } = window.jspdf;
+        let doc = new jsPDF();
+    
+        doc.text("Grocery Invoice", 80, 10);
+        doc.text("GSTIN: 27ALJPN3579K1ZF", 10, 20);
+    
+        let y = 30;
+        doc.text("Product", 10, y);
+        doc.text("Price", 50, y);
+        doc.text("Qty", 80, y);
+        doc.text("GST%", 100, y);
+        doc.text("CGST", 120, y);
+        doc.text("SGST", 140, y);
+        doc.text("Total", 160, y);
+        
+        y += 10; // Move to next row
+    
+        products.forEach(product => {
+            doc.text(product.name, 10, y);
+            doc.text(`₹${product.price.toFixed(2)}`, 50, y);
+            doc.text(`${product.quantity}`, 80, y);
+            doc.text(`${product.gstRate}%`, 100, y);
+            doc.text(`₹${product.cgst.toFixed(2)}`, 120, y);
+            doc.text(`₹${product.sgst.toFixed(2)}`, 140, y);
+            doc.text(`₹${product.total.toFixed(2)}`, 160, y);
+            y += 10; // Move to next row
+        });
+    
+        doc.text(`Total Amount: ₹${products.reduce((sum, p) => sum + p.total, 0).toFixed(2)}`, 10, y + 10);
+    
+        doc.save("invoice.pdf");
+
+        // Refresh the page after downloading the invoice
+        setTimeout(() => {
+          location.reload();
+         }, 1000); // Delay to ensure the file is downloaded before refresh
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <!-- Outer Circle -->
+  <circle cx="200" cy="200" r="150" fill="#3C85EF" />
+  
+  <!-- Inner Circle -->
+  <circle cx="200" cy="200" r="135" fill="#2A71D8" />
+  
+  <!-- Chat Bubble Shape -->
+  <path d="M140 180 C140 140, 260 140, 260 180 L260 230 C260 250, 240 270, 220 270 L180 270 C160 270, 140 250, 140 230 Z" fill="white" />
+  
+  <!-- Dollar sign with shadow effect -->
+  <text x="200" y="225" font-family="Arial" font-size="80" font-weight="bold" fill="#2A71D8" text-anchor="middle" filter="url(#shadow)">$</text>
+  
+  <!-- Small tax form icons -->
+  <rect x="170" y="170" width="20" height="25" rx="2" ry="2" fill="#AAD4FF" />
+  <rect x="210" y="170" width="20" height="25" rx="2" ry="2" fill="#AAD4FF" />
+  <line x1="175" y1="178" x2="185" y2="178" stroke="#2A71D8" stroke-width="1.5" />
+  <line x1="175" y1="184" x2="185" y2="184" stroke="#2A71D8" stroke-width="1.5" />
+  <line x1="215" y1="178" x2="225" y2="178" stroke="#2A71D8" stroke-width="1.5" />
+  <line x1="215" y1="184" x2="225" y2="184" stroke="#2A71D8" stroke-width="1.5" />
+  
+  <!-- Company Name at bottom of circle -->
+  <path id="curve" d="M 75 260 A 150 150 0 0 0 325 260" fill="transparent" />
+  <text font-family="Arial" font-size="28" font-weight="bold" fill="white">
+    <textPath href="#curve" startOffset="50%" text-anchor="middle">TaxGenie</textPath>
+  </text>
+
+  <!-- Filter for shadow effect -->
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#1E5BB0" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+</svg>
